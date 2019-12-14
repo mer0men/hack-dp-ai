@@ -70,7 +70,7 @@
         <h3 class="n2">выбор способа передвижения</h3>
       </div>
       <div class="transport-pick">
-        <div class="item">
+        <div class="item" @click="selectedTransport(WALKING)">
           <svg
             width="106"
             height="106"
@@ -88,7 +88,7 @@
             />
           </svg>
         </div>
-        <div class="item">
+        <div class="item" @click="selectedTransport(DRIVING)">
           <svg
             width="121"
             height="121"
@@ -110,7 +110,7 @@
             />
           </svg>
         </div>
-        <div class="item">
+        <div class="item" @click="selectedTransport(TRANSIT)">
           <svg
             width="85"
             height="103"
@@ -167,12 +167,15 @@
             />
           </svg>
         </div>
-        <input
-          type="text"
-          name="Address"
-          id=""
-          placeholder="Ваше местоположение"
-        />
+<!--        <input-->
+<!--          type=""-->
+<!--          name="Address"-->
+<!--          id=""-->
+<!--          placeholder="Услуги"-->
+<!--        />-->
+        <select v-model="selectedService">
+          <option v-for="(item, index) in services" :key="index">{{item.text}}</option>
+        </select>
       </div>
     </div>
 
@@ -278,6 +281,7 @@
       <input
         class="btn"
         type="button"
+        @click="redirectToReception"
         value="записаться на более удобное время"
       />
     </div>
@@ -291,13 +295,15 @@ import InfoCard from "../components/InfoCard";
 export default {
   name: "home",
   components: {
-    InfoCard,
-    mfc: [],
-    stats: [],
-    services: []
+    InfoCard
   },
   data() {
     return {
+      mfc: [],
+      stats: [],
+      services: [],
+      selectService: {},
+      selectedTransport: "",
       map: undefined,
       googleMapsClient: require("@google/maps").createClient({
         key: "AIzaSyC0zt4dGxQo4j_dt9z8dofi1UHQOApc8S0"
@@ -306,22 +312,40 @@ export default {
   },
   methods: {
     async getMfc() {
-      data = await fetch("localhost:8080/api/server");
-      body = await data.json();
+      let data = await fetch("http://localhost:8081/api/server");
+      let body = await data.json();
       this.mfc = body;
     },
     async getStats() {
-      data = await fetch("localhost:8080/api/statistics");
-      body = await data.json();
+      let data = await fetch("http://localhost:8081/api/statistics");
+      let body = await data.json();
       this.stats = body;
     },
     async getServices() {
-      data = await fetch("localhost:8080/api/parser");
-      body = await data.json();
+      let data = await fetch("http://localhost:8081/api/parser");
+      let body = await data.json();
       this.services = body;
+    },
+    chooseTransport(transport) {
+      this.selectedTransport = transport;
+    },
+    redirectToReception() {
+      window.open("mfc-25.ru:8888", "_blank")
+    },
+    drawRoute() {
+
     }
   },
   mounted() {
+    setInterval(() => {
+      this.getStats();
+    }, 10000);
+
+    this.getMfc();
+    this.getServices();
+
+    // 674f2139-aa09-4e0a-6309-586716967894 Борисенко 102
+
     GoogleMapsLoader.KEY = "AIzaSyC0zt4dGxQo4j_dt9z8dofi1UHQOApc8S0";
     GoogleMapsLoader.LIBRARIES = ["directions", "places"];
     GoogleMapsLoader.VERSION = "3";
