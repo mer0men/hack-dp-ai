@@ -300,6 +300,7 @@
 <script>
 import GoogleMapsLoader from "google-maps";
 import InfoCard from "../components/InfoCard";
+import { async } from 'q';
 
 export default {
   name: "home",
@@ -323,10 +324,13 @@ export default {
     };
   },
   methods: {
-    async getMfc() {
-      let data = await fetch("http://localhost:8081/api/server");
-      let body = await data.json();
-      this.mfc = body;
+    getMfc() {
+      return new Promise(async (resolve, reject) => {
+        let data = await fetch("http://localhost:8081/api/server");
+        let body = await data.json();
+        this.mfc = body;
+        resolve()
+      })
     },
     async getStats() {
       let data = await fetch("http://localhost:8081/api/statistics");
@@ -357,14 +361,29 @@ export default {
         }
       });
     },
+    sleep(ms) {
+      return new Promise(resolve => setTimeout(resolve, ms));
+    },
     drawMFCMarkers(google) {
       this.geocoder = new google.maps.Geocoder();
 
-      this.mfc.map(currentMFC => {
+      let vladmfc = this.mfc.filter(item => {
+        if (item.organizationAddress.split("Владивосток").length > 1)
+          return item
+      })
+
+      let redIcon
+      let yellowIcon
+      let greenIcon
+
+      vladmfc.map(async currentMFC => {
+        console.log(currentMFC)
         this.geocoder.geocode(
           { address: currentMFC.organizationAddress },
           (results, status) => {
             if (status === "OK") {
+
+
               let marker = new google.maps.Marker({
                 map: this.map,
                 position: results[0].geometry.location
@@ -377,16 +396,16 @@ export default {
       });
     }
   },
-  mounted() {
+  async mounted() {
     setInterval(() => {
       this.getStats();
     }, 10000);
 
-    this.getMfc();
+    await this.getMfc();
     this.getServices();
 
     GoogleMapsLoader.KEY = "AIzaSyC0zt4dGxQo4j_dt9z8dofi1UHQOApc8S0";
-    GoogleMapsLoader.LIBRARIES = ["directions", "places"];
+    GoogleMapsLoader.LIBRARIES = ["directions", "places", "geocoder"];
     GoogleMapsLoader.VERSION = "3";
     GoogleMapsLoader.REGION = "ru";
 
