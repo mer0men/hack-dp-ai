@@ -223,10 +223,10 @@
         </svg>
       </div>
       <div class="block">
-        <p class="address">Партизанский просп., 28А</p>
+        <p class="address">Борисенко 102</p>
         <p class="number">+7 (423) 201-01-56</p>
         <p class="road">дорога до отделения и получение услуги займут около</p>
-        <p class="time">~15 минут</p>
+        <p class="time">~{{curMFC.time}} минут</p>
       </div>
       <div class="stat-header">Статистика загруженности:</div>
       <div class="stat">
@@ -250,7 +250,7 @@
               />
             </svg>
           </div>
-          <span>3</span>
+          <span>{{ curMFC.queue }}</span>
         </div>
         <div class="item">
           <p>обслужено сегодня:</p>
@@ -272,15 +272,15 @@
               />
             </svg>
           </div>
-          <span>253</span>
+          <span>{{curMFC.all}}</span>
         </div>
       </div>
     </div>
-    <div class="stats">
-      <info-card :address="'ул.Хуя'" :time="'дохуя'"></info-card>
-      <info-card :address="'ул.Хуя'" :time="'дохуя'"></info-card>
-      <info-card :address="'ул.Хуя'" :time="'дохуя'"></info-card>
-      <info-card :address="'ул.Хуя'" :time="'дохуя'"></info-card>
+    <div v-if="vladmfc.length > 0" class="stats">
+      <info-card :address="vladmfc[5].organizationAddress.split('ул.')[1]" :time="curMFC.time + 10 + Math.floor(Math.random() * 30)"></info-card>
+      <info-card :address="vladmfc[1].organizationAddress.split(' ')[1]" :time="curMFC.time   + 10 + Math.floor(Math.random() * 30)"></info-card>
+      <info-card :address="vladmfc[4].organizationAddress.split('ул.')[1]" :time="curMFC.time + 10 + Math.floor(Math.random() * 30)"></info-card>
+      <info-card :address="vladmfc[6].organizationAddress.split('ул.')[1]" :time="curMFC.time + 10 + Math.floor(Math.random() * 30)"></info-card>
     </div>
     <div class="bad-version">
       <h3>
@@ -316,6 +316,14 @@ export default {
       selectedTransport: "DRIVING",
       directionsService: undefined,
       directionsRenderer: undefined,
+      startLocation: [],
+      endLocation: [],
+      vladmfc: [],
+      curMFC: {
+        time: 0,
+        queue: 2,
+        all: 235
+      },
       geocoder: undefined,
       map: undefined,
       googleMapsClient: require("@google/maps").createClient({
@@ -344,6 +352,7 @@ export default {
     },
     chooseTransport(transport) {
       this.selectedTransport = transport;
+      this.drawRoute(this.startLocation, this.endLocation)
     },
     redirectToReception() {
       window.open("http://mfc-25.ru:8888", "_blank");
@@ -357,6 +366,7 @@ export default {
 
       this.directionsService.route(request, (response, status) => {
         if (status === "OK") {
+          this.curMFC.time = +response.routes[0].legs[0].duration.text.split(" ")[0] + (this.curMFC.queue * 2) + 5
           this.directionsRenderer.setDirections(response);
         }
       });
@@ -364,29 +374,39 @@ export default {
     sleep(ms) {
       return new Promise(resolve => setTimeout(resolve, ms));
     },
+    markerColor(cnt) {
+      let redIcon = "https://raw.githubusercontent.com/Meromen/hack-dp-ai/master/src/assets/redIcon.png"
+      let yellowIcon = "https://raw.githubusercontent.com/Meromen/hack-dp-ai/master/src/assets/yellowIcon.png"
+      let greenIcon = "https://raw.githubusercontent.com/Meromen/hack-dp-ai/master/src/assets/greenIcon.png"
+
+      if (cnt > 5) {
+        return redIcon
+      } else if (cnt> 2) {
+        return yellowIcon
+      } else {
+        return greenIcon
+      }
+    },
     drawMFCMarkers(google) {
       this.geocoder = new google.maps.Geocoder();
 
-      let vladmfc = this.mfc.filter(item => {
+      this.vladmfc = this.mfc.filter(item => {
         if (item.organizationAddress.split("Владивосток").length > 1)
           return item
       })
 
-      let redIcon
-      let yellowIcon
-      let greenIcon
 
-      vladmfc.map(async currentMFC => {
+      this.vladmfc.map(async currentMFC => {
         console.log(currentMFC)
         this.geocoder.geocode(
           { address: currentMFC.organizationAddress },
           (results, status) => {
             if (status === "OK") {
-
-
+              let icon = this.markerColor(currentMFC.pendingTicketsCount)
               let marker = new google.maps.Marker({
                 map: this.map,
-                position: results[0].geometry.location
+                position: results[0].geometry.location,
+                icon: icon
               });
             } else {
               console.log("Address error:" + status);
@@ -413,11 +433,11 @@ export default {
       // let vladivostok = new google.maps.LatLng(43.119809, 131.886924);
       let placeInputStart = [43.0250776, 131.8885557];
       let placeInputEnd = [43.0849533, 131.9516535];
-      let startLocation = new google.maps.LatLng(
+      this.startLocation = new google.maps.LatLng(
         placeInputStart[0],
         placeInputStart[1]
       );
-      let endLocation = new google.maps.LatLng(
+      this.endLocation = new google.maps.LatLng(
         placeInputEnd[0],
         placeInputEnd[1]
       );
@@ -426,7 +446,7 @@ export default {
 
       this.map = new google.maps.Map(document.getElementById("map"), {
         zoom: 15,
-        center: startLocation
+        center: this.startLocation
       });
 
       this.directionsRenderer.setMap(this.map);
@@ -440,7 +460,17 @@ export default {
         icon
       });
 
-      this.drawRoute(startLocation, endLocation);
+      let marker2 = new google.maps.Marker({
+        position: { lat: placeInputEnd[0], lng: placeInputEnd[1] },
+        map: this.map,
+        title: "Мое местоположение",
+        icon: "https://raw.githubusercontent.com/Meromen/hack-dp-ai/master/src/assets/greenIcon.png"
+      });
+      
+
+
+
+      this.drawRoute(this.startLocation, this.endLocation);
       this.drawMFCMarkers(google);
     });
   }
