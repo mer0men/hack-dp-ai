@@ -294,30 +294,30 @@ export default {
     InfoCard,
     mfc: [],
     stats: [],
-    services: []
+    services: [],
   },
   data() {
     return {
       map: undefined,
       googleMapsClient: require("@google/maps").createClient({
-        key: "AIzaSyC0zt4dGxQo4j_dt9z8dofi1UHQOApc8S0"
-      })
+        key: "AIzaSyxC0zt4dGxQo4j_dt9z8dofi1UHQOApc8S0"
+      }),
     };
   },
   methods: {
     async getMfc() {
-      data = await fetch("localhost:8080/api/server");
-      body = await data.json();
+      let data = await fetch("localhost:8080/api/server");
+      let body = await data.json();
       this.mfc = body;
     },
     async getStats() {
-      data = await fetch("localhost:8080/api/statistics");
-      body = await data.json();
+      let data = await fetch("localhost:8080/api/statistics");
+      let body = await data.json();
       this.stats = body;
     },
     async getServices() {
-      data = await fetch("localhost:8080/api/parser");
-      body = await data.json();
+      let data = await fetch("localhost:8080/api/parser");
+      let body = await data.json();
       this.services = body;
     }
   },
@@ -328,11 +328,20 @@ export default {
     GoogleMapsLoader.REGION = "ru";
 
     GoogleMapsLoader.load(google => {
-      let chicago = new google.maps.LatLng(41.850033, -87.6500523);
+      // let vladivostok = new google.maps.LatLng(43.119809, 131.886924);
+      let placeInput = [43.0250776, 131.8885557]
+      let startLocation = new google.maps.LatLng(placeInput[0], placeInput[1])
 
       this.map = new google.maps.Map(document.getElementById("map"), {
-        zoom: 7,
-        center: chicago
+        zoom: 15,
+        center: startLocation
+      });
+
+      let icon = "/img/human.png"
+      let marker = new google.maps.Marker({
+        position: {lat: placeInput[0], lng: placeInput[1]},
+        map: this.map,
+        title: 'Мое местоположение'
       });
     });
   }
