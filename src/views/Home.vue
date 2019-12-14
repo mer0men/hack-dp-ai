@@ -181,7 +181,7 @@
           </svg>
         </div>
         <select v-model="selectedService">
-          <option selected value="Выберете услугу" disabled></option>
+          <option selected value="Выберете услугу">Выберите услугу</option>
           <option v-for="(item, index) in services" :key="index">{{
             item.text
           }}</option>
@@ -226,7 +226,7 @@
       <div class="block">
         <p class="address">Борисенко 102</p>
         <p class="number">+7 (423) 201-01-56</p>
-        <p class="road">дорога до отделения и получение услуги займут около</p>
+        <p class="road"><span class="road-bold">дорога до отделения</span><br> и <span class="road-bold">получение услуги</span> займут около</p>
         <p class="time">~{{curMFC.time}} минут</p>
       </div>
       <div class="stat-header">Статистика загруженности:</div>
@@ -482,6 +482,10 @@ export default {
 </script>
 
 <style lang="scss">
+body {
+  margin: 0;
+  padding: 0;
+}
 .selected-item {
   background: darken($color: #e75138, $amount: 20) !important;
 }
@@ -684,6 +688,8 @@ h3 {
 }
 
 .header {
+  margin-top: 15px;
+  text-transform: uppercase;
   grid-area: lg;
   display: flex;
   justify-content: start;
@@ -779,6 +785,7 @@ h3 {
     height: 50px;
     border: none;
     color: black;
+    font-size: 24px;
   }
 
   input {
@@ -786,6 +793,7 @@ h3 {
     margin-left: 16px;
     height: 60px;
     border: none;
+    font-size: 24px;
   }
 
   @media (max-width: 600px) {
@@ -866,12 +874,15 @@ h3 {
       font-size: 42px;
       line-height: 62px;
       text-transform: uppercase;
+      margin-top: 35px;
+      margin-bottom: 0px;
     }
 
     .number {
       font-weight: bold;
       font-size: 36px;
       line-height: 53px;
+      margin-top: 0px;
     }
 
     .road {
@@ -879,13 +890,19 @@ h3 {
       font-weight: normal;
       font-size: 24px;
       line-height: 28px;
+
+      .road-bold {
+        text-transform: uppercase;
+        font-weight: 600;
+      }
     }
 
     .time {
       font-style: normal;
       font-weight: 800;
       font-size: 72px;
-      line-height: 14px;
+      line-height: 72px;
+      margin: 10px 0;
     }
   }
 
@@ -897,6 +914,8 @@ h3 {
     text-align: left;
     display: flex;
     align-items: center;
+    text-transform: uppercase;
+    margin-top: 30px;
   }
 
   .stat {
@@ -911,6 +930,8 @@ h3 {
         font-weight: normal;
         font-size: 24px;
         line-height: 35px;
+        text-transform: uppercase;
+        margin: 30px 0;
       }
 
       .icon {
@@ -938,7 +959,12 @@ h3 {
 }
 
 .bad-version {
+  padding-top: 60px;
   grid-area: bd;
+
+  h3 {
+    text-transform: uppercase;
+  }
 
   .btn {
     height: 90px;
@@ -953,6 +979,12 @@ h3 {
     font-weight: 800;
     font-size: 24px;
     line-height: 35px;
+    font-weight: 600;
+    transition: .2s all ease-out;
+
+    &:hover {
+      background: darken(#eb4b34, 20%);
+    }
   }
 }
 

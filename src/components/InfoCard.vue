@@ -67,6 +67,7 @@ export default {
 
   .block {
     border: 4px solid #cb9b63;
+    padding: 10px;
     box-sizing: border-box;
     border-radius: 20px;
     text-align: left;
