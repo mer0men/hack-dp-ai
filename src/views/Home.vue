@@ -70,7 +70,7 @@
         <h3 class="n2">выбор способа передвижения</h3>
       </div>
       <div class="transport-pick">
-        <div class="item">
+        <div class="item" @click="selectedTransport(WALKING)">
           <svg
             width="106"
             height="106"
@@ -88,7 +88,7 @@
             />
           </svg>
         </div>
-        <div class="item">
+        <div class="item" @click="selectedTransport(DRIVING)">
           <svg
             width="121"
             height="121"
@@ -110,7 +110,7 @@
             />
           </svg>
         </div>
-        <div class="item">
+        <div class="item" @click="selectedTransport(TRANSIT)">
           <svg
             width="85"
             height="103"
@@ -167,12 +167,15 @@
             />
           </svg>
         </div>
-        <input
-          type="text"
-          name="Address"
-          id=""
-          placeholder="Ваше местоположение"
-        />
+<!--        <input-->
+<!--          type=""-->
+<!--          name="Address"-->
+<!--          id=""-->
+<!--          placeholder="Услуги"-->
+<!--        />-->
+        <select v-model="selectedService">
+          <option v-for="(item, index) in services" :key="index">{{item.text}}</option>
+        </select>
       </div>
     </div>
 
@@ -278,6 +281,7 @@
       <input
         class="btn"
         type="button"
+        @click="redirectToReception"
         value="записаться на более удобное время"
       />
     </div>
@@ -291,13 +295,15 @@ import InfoCard from "../components/InfoCard";
 export default {
   name: "home",
   components: {
-    InfoCard,
-    mfc: [],
-    stats: [],
-    services: [],
+    InfoCard
   },
   data() {
     return {
+      mfc: [],
+      stats: [],
+      services: [],
+      selectService: {},
+      selectedTransport: "",
       map: undefined,
       googleMapsClient: require("@google/maps").createClient({
         key: "AIzaSyxC0zt4dGxQo4j_dt9z8dofi1UHQOApc8S0"
@@ -306,22 +312,38 @@ export default {
   },
   methods: {
     async getMfc() {
-      let data = await fetch("localhost:8080/api/server");
+      let data = await fetch("http://localhost:8081/api/server");
       let body = await data.json();
       this.mfc = body;
     },
     async getStats() {
-      let data = await fetch("localhost:8080/api/statistics");
+      let data = await fetch("http://localhost:8081/api/statistics");
       let body = await data.json();
       this.stats = body;
     },
     async getServices() {
-      let data = await fetch("localhost:8080/api/parser");
+      let data = await fetch("http://localhost:8081/api/parser");
       let body = await data.json();
       this.services = body;
+    },
+    chooseTransport(transport) {
+      this.selectedTransport = transport;
+    },
+    redirectToReception() {
+      window.open("mfc-25.ru:8888", "_blank")
+    },
+    drawRoute() {
+
     }
   },
   mounted() {
+    setInterval(() => {
+      this.getStats();
+    }, 10000);
+
+    this.getMfc();
+    this.getServices();
+
     GoogleMapsLoader.KEY = "AIzaSyC0zt4dGxQo4j_dt9z8dofi1UHQOApc8S0";
     GoogleMapsLoader.LIBRARIES = ["directions", "places"];
     GoogleMapsLoader.VERSION = "3";
@@ -329,15 +351,15 @@ export default {
 
     GoogleMapsLoader.load(google => {
       // let vladivostok = new google.maps.LatLng(43.119809, 131.886924);
-      let placeInput = [43.0250776, 131.8885557]
-      let startLocation = new google.maps.LatLng(placeInput[0], placeInput[1])
+      let placeInput = [43.0250776, 131.8885557];
+      let startLocation = new google.maps.LatLng(placeInput[0], placeInput[1]);
 
       this.map = new google.maps.Map(document.getElementById("map"), {
         zoom: 15,
         center: startLocation
       });
 
-      let icon = "/img/human.png"
+      let icon = "/img/human.png";
       let marker = new google.maps.Marker({
         position: {lat: placeInput[0], lng: placeInput[1]},
         map: this.map,
