@@ -70,7 +70,11 @@
         <h3 class="n2">выбор способа передвижения</h3>
       </div>
       <div class="transport-pick">
-        <div class="item" @click="chooseTransport('WALKING')">
+        <div
+          :class="{ 'selected-item': selectedTransport == 'WALKING' }"
+          class="item"
+          @click="chooseTransport('WALKING')"
+        >
           <svg
             width="106"
             height="106"
@@ -88,7 +92,11 @@
             />
           </svg>
         </div>
-        <div class="item" @click="chooseTransport('DRIVING')">
+        <div
+          :class="{ 'selected-item': selectedTransport == 'DRIVING' }"
+          class="item"
+          @click="chooseTransport('DRIVING')"
+        >
           <svg
             width="121"
             height="121"
@@ -110,7 +118,11 @@
             />
           </svg>
         </div>
-        <div class="item" @click="chooseTransport('TRANSIT')">
+        <div
+          :class="{ 'selected-item': selectedTransport == 'TRANSIT' }"
+          class="item"
+          @click="chooseTransport('TRANSIT')"
+        >
           <svg
             width="85"
             height="103"
@@ -167,14 +179,11 @@
             />
           </svg>
         </div>
-<!--        <input-->
-<!--          type=""-->
-<!--          name="Address"-->
-<!--          id=""-->
-<!--          placeholder="Услуги"-->
-<!--        />-->
         <select v-model="selectedService">
-          <option v-for="(item, index) in services" :key="index">{{item.text}}</option>
+          <option selected value="Выберете услугу" disabled></option>
+          <option v-for="(item, index) in services" :key="index">{{
+            item.text
+          }}</option>
         </select>
       </div>
     </div>
@@ -351,18 +360,21 @@ export default {
     drawMFCMarkers(google) {
       this.geocoder = new google.maps.Geocoder();
 
-      this.mfc.map((currentMFC) => {
-        this.geocoder.geocode({'address': currentMFC.Name}, (results, status) => {
-          if (status === 'OK') {
-            let marker = new google.maps.Marker({
-              map: this.map,
-              position: results[0].geometry.location
-            });
-          } else {
-            console.log("Address error:" + status);
+      this.mfc.map(currentMFC => {
+        this.geocoder.geocode(
+          { address: currentMFC.organizationAddress },
+          (results, status) => {
+            if (status === "OK") {
+              let marker = new google.maps.Marker({
+                map: this.map,
+                position: results[0].geometry.location
+              });
+            } else {
+              console.log("Address error:" + status);
+            }
           }
-        })
-      })
+        );
+      });
     }
   },
   mounted() {
@@ -382,8 +394,14 @@ export default {
       // let vladivostok = new google.maps.LatLng(43.119809, 131.886924);
       let placeInputStart = [43.0250776, 131.8885557];
       let placeInputEnd = [43.0849533, 131.9516535];
-      let startLocation = new google.maps.LatLng(placeInputStart[0], placeInputStart[1]);
-      let endLocation = new google.maps.LatLng(placeInputEnd[0], placeInputEnd[1]);
+      let startLocation = new google.maps.LatLng(
+        placeInputStart[0],
+        placeInputStart[1]
+      );
+      let endLocation = new google.maps.LatLng(
+        placeInputEnd[0],
+        placeInputEnd[1]
+      );
       this.directionsService = new google.maps.DirectionsService();
       this.directionsRenderer = new google.maps.DirectionsRenderer();
 
@@ -394,11 +412,12 @@ export default {
 
       this.directionsRenderer.setMap(this.map);
 
-      let icon = "https://raw.githubusercontent.com/Meromen/hack-dp-ai/master/src/assets/human.png";
+      let icon =
+        "https://raw.githubusercontent.com/Meromen/hack-dp-ai/master/src/assets/human.png";
       let marker = new google.maps.Marker({
-        position: {lat: placeInputStart[0], lng: placeInputStart[1]},
+        position: { lat: placeInputStart[0], lng: placeInputStart[1] },
         map: this.map,
-        title: 'Мое местоположение',
+        title: "Мое местоположение",
         icon
       });
 
@@ -410,6 +429,10 @@ export default {
 </script>
 
 <style lang="scss">
+.selected-item {
+  background: darken($color: #e75138, $amount: 20) !important;
+}
+
 .n1 {
   @media (max-width: 600px) {
     padding-left: 20%;
@@ -670,6 +693,7 @@ h3 {
     justify-content: center;
     align-items: center;
     margin: 0 32px;
+    transition: 0.4s;
 
     @media (max-width: 600px) {
       margin: 0 4px;
@@ -694,6 +718,14 @@ h3 {
   .search-icon {
     width: 44px;
     height: 44px;
+  }
+
+  select {
+    width: 100%;
+    background: rgba(0, 0, 0, 0);
+    height: 50px;
+    border: none;
+    color: black;
   }
 
   input {
@@ -774,11 +806,13 @@ h3 {
     grid-area: of;
     background: #eb4b34;
     border-radius: 20px;
+    color: white;
 
     .address {
       font-weight: 800;
       font-size: 42px;
       line-height: 62px;
+      text-transform: uppercase;
     }
 
     .number {
@@ -856,6 +890,8 @@ h3 {
   .btn {
     height: 90px;
     width: 60%;
+    color: white;
+    text-transform: uppercase;
     background: #eb4b34;
     border: 4px solid #eb4b34;
     box-sizing: border-box;
