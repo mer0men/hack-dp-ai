@@ -70,7 +70,7 @@
         <h3 class="n2">выбор способа передвижения</h3>
       </div>
       <div class="transport-pick">
-        <div class="item" @click="selectedTransport(WALKING)">
+        <div class="item" @click="chooseTransport('WALKING')">
           <svg
             width="106"
             height="106"
@@ -88,7 +88,7 @@
             />
           </svg>
         </div>
-        <div class="item" @click="selectedTransport(DRIVING)">
+        <div class="item" @click="chooseTransport('DRIVING')">
           <svg
             width="121"
             height="121"
@@ -110,7 +110,7 @@
             />
           </svg>
         </div>
-        <div class="item" @click="selectedTransport(TRANSIT)">
+        <div class="item" @click="chooseTransport('TRANSIT')">
           <svg
             width="85"
             height="103"
@@ -302,12 +302,14 @@ export default {
       mfc: [],
       stats: [],
       services: [],
-      selectService: {},
-      selectedTransport: "",
+      selectedService: {},
+      selectedTransport: "DRIVING",
+      directionsService: undefined,
+      directionsRenderer: undefined,
       map: undefined,
       googleMapsClient: require("@google/maps").createClient({
         key: "AIzaSyxC0zt4dGxQo4j_dt9z8dofi1UHQOApc8S0"
-      }),
+      })
     };
   },
   methods: {
@@ -330,10 +332,20 @@ export default {
       this.selectedTransport = transport;
     },
     redirectToReception() {
-      window.open("mfc-25.ru:8888", "_blank")
+      window.open("http://mfc-25.ru:8888", "_blank");
     },
-    drawRoute() {
+    drawRoute(startLocation, endLocation) {
+      let request = {
+        origin: startLocation,
+        destination: endLocation,
+        travelMode: this.selectedTransport
+      };
 
+      this.directionsService.route(request, (response, status) => {
+        if (status === "OK") {
+          this.directionsRenderer.setDirections(response);
+        }
+      });
     }
   },
   mounted() {
@@ -351,20 +363,28 @@ export default {
 
     GoogleMapsLoader.load(google => {
       // let vladivostok = new google.maps.LatLng(43.119809, 131.886924);
-      let placeInput = [43.0250776, 131.8885557];
-      let startLocation = new google.maps.LatLng(placeInput[0], placeInput[1]);
+      let placeInputStart = [43.0250776, 131.8885557];
+      let placeInputEnd = [43.032648, 131.865268];
+      let startLocation = new google.maps.LatLng(placeInputStart[0], placeInputStart[1]);
+      let endLocation = new google.maps.LatLng(placeInputEnd[0], placeInputEnd[1]);
+      this.directionsService = new google.maps.DirectionsService();
+      this.directionsRenderer = new google.maps.DirectionsRenderer();
 
       this.map = new google.maps.Map(document.getElementById("map"), {
         zoom: 15,
         center: startLocation
       });
+        this.directionsRenderer.setMap(this.map);
 
-      let icon = "/img/human.png";
+      let icon = "https://raw.githubusercontent.com/Meromen/hack-dp-ai/master/src/assets/human.png";
       let marker = new google.maps.Marker({
-        position: {lat: placeInput[0], lng: placeInput[1]},
+        position: {lat: placeInputStart[0], lng: placeInputStart[1]},
         map: this.map,
-        title: 'Мое местоположение'
+        title: 'Мое местоположение',
+        icon
       });
+
+      this.drawRoute(startLocation, endLocation);
     });
   }
 };
