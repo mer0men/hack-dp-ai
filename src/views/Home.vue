@@ -291,7 +291,10 @@ import InfoCard from "../components/InfoCard";
 export default {
   name: "home",
   components: {
-    InfoCard
+    InfoCard,
+    mfc: [],
+    stats: [],
+    services: []
   },
   data() {
     return {
@@ -300,6 +303,23 @@ export default {
         key: "AIzaSyC0zt4dGxQo4j_dt9z8dofi1UHQOApc8S0"
       })
     };
+  },
+  methods: {
+    async getMfc() {
+      data = await fetch("localhost:8080/api/server");
+      body = await data.json();
+      this.mfc = body;
+    },
+    async getStats() {
+      data = await fetch("localhost:8080/api/statistics");
+      body = await data.json();
+      this.stats = body;
+    },
+    async getServices() {
+      data = await fetch("localhost:8080/api/parser");
+      body = await data.json();
+      this.services = body;
+    }
   },
   mounted() {
     GoogleMapsLoader.KEY = "AIzaSyC0zt4dGxQo4j_dt9z8dofi1UHQOApc8S0";
@@ -429,6 +449,12 @@ export default {
       "mp mp mp mp mp mp mp mp mp mp mp mp"
       "mp mp mp mp mp mp mp mp mp mp mp mp"
       "mp mp mp mp mp mp mp mp mp mp mp mp"
+      "in in in in in in in in in in in in"
+      "in in in in in in in in in in in in"
+      "in in in in in in in in in in in in"
+      "in in in in in in in in in in in in"
+      "in in in in in in in in in in in in"
+      "in in in in in in in in in in in in"
       "in in in in in in in in in in in in"
       "in in in in in in in in in in in in"
       "in in in in in in in in in in in in"
@@ -643,13 +669,20 @@ h3 {
     grid-template-areas:
       "hd hd hd hd hd hd"
       ".  .  ic ic .  . "
-      "."
-      ""
-      "";
+      "of of of of of of"
+      "hs hs hs hs hs hs"
+      "s  s  s  s  s  s ";
   }
 
   .icon {
     grid-area: ic;
+
+    @media (max-width: 600px) {
+      svg {
+        width: 35px;
+        height: 44px;
+      }
+    }
   }
 
   .header {
@@ -657,6 +690,12 @@ h3 {
     font-weight: 800;
     font-size: 40px;
     line-height: 59px;
+
+    @media (max-width: 600px) {
+      font-weight: 800;
+      font-size: 36px;
+      line-height: 36px;
+    }
   }
 
   .block {
