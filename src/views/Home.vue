@@ -31,6 +31,7 @@
       <div class="input-block">
         <div class="search-icon">
           <svg
+            class="search-icon"
             width="46"
             height="42"
             viewBox="0 0 46 42"
@@ -142,6 +143,7 @@
       <div class="input-block">
         <div class="search-icon">
           <svg
+            class="search-icon"
             width="46"
             height="42"
             viewBox="0 0 46 42"
@@ -326,20 +328,43 @@ export default {
 
 .n2 {
   @media (max-width: 600px) {
-    padding-left: 20%;
+    padding-left: 6%;
   }
 }
 
 .n3 {
   @media (max-width: 600px) {
-    padding-left: 20%;
+    padding-left: 58%;
+    text-align: right;
   }
 }
 
 .left {
+  @media (max-width: 600px) {
+    .circle {
+      left: 5px !important;
+      top: 50px !important;
+    }
+
+    .num {
+      left: 0px !important;
+      top: -40px !important;
+    }
+  }
 }
 
 .rigth {
+  @media (max-width: 600px) {
+    .circle {
+      left: 300px !important;
+      top: -10px !important;
+    }
+
+    .num {
+      left: 290px !important;
+      top: -90px !important;
+    }
+  }
 }
 
 .mobile {
@@ -400,21 +425,18 @@ export default {
       "ct ct ct ct ct ct ct ct ct ct ct ct"
       "ct ct ct ct ct ct ct ct ct ct ct ct"
       "ct ct ct ct ct ct ct ct ct ct ct ct"
-      "ct ct ct ct ct ct ct ct ct ct ct ct"
-      "ct ct ct ct ct ct ct ct ct ct ct ct"
-      "ct ct ct ct ct ct ct ct ct ct ct ct"
       "mp mp mp mp mp mp mp mp mp mp mp mp"
       "mp mp mp mp mp mp mp mp mp mp mp mp"
       "mp mp mp mp mp mp mp mp mp mp mp mp"
       "mp mp mp mp mp mp mp mp mp mp mp mp"
-      ". . in in in in in in in in . ."
-      ". . in in in in in in in in . ."
-      ". . in in in in in in in in . ."
-      ". . in in in in in in in in . ."
-      ". . st st st st st st st st . ."
-      ". . st st st st st st st st . ."
-      ". . bd bd bd bd bd bd bd bd . ."
-      ". . bd bd bd bd bd bd bd bd . .";
+      "in in in in in in in in in in in in"
+      "in in in in in in in in in in in in"
+      "in in in in in in in in in in in in"
+      "in in in in in in in in in in in in"
+      "st st st st st st st st st st st st"
+      "st st st st st st st st st st st st"
+      "bd bd bd bd bd bd bd bd bd bd bd bd"
+      "bd bd bd bd bd bd bd bd bd bd bd bd";
   }
 }
 
@@ -461,12 +483,14 @@ h3 {
   line-height: 53px;
 
   @media (max-width: 600px) {
+    margin-bottom: 8px;
     font-style: normal;
     font-weight: 800;
     font-size: 20px;
     line-height: 20px;
     text-align: left;
     width: 40%;
+    margin-top: 64px;
   }
 }
 
@@ -550,6 +574,11 @@ h3 {
     justify-content: center;
     align-items: center;
     margin: 0 32px;
+
+    @media (max-width: 600px) {
+      margin: 0 4px;
+      border-radius: 0%;
+    }
   }
 }
 
@@ -577,6 +606,25 @@ h3 {
     height: 60px;
     border: none;
   }
+
+  @media (max-width: 600px) {
+    padding: 0 8px;
+    height: 32px;
+    border: 2px solid #e75138;
+    width: 75%;
+    margin-left: 20%;
+    .search-icon {
+      width: 22px;
+      height: 22px;
+    }
+
+    input {
+      width: calc(100% - 20px);
+      margin-left: 16px;
+      height: 20px;
+      border: none;
+    }
+  }
 }
 
 .best-offer {
@@ -590,6 +638,15 @@ h3 {
     "ic ic of of of of"
     ".  .  hs hs hs hs"
     ".  .  s  s  s  s";
+
+  @media (max-width: 600px) {
+    grid-template-areas:
+      "hd hd hd hd hd hd"
+      ".  .  ic ic .  . "
+      "."
+      ""
+      "";
+  }
 
   .icon {
     grid-area: ic;
