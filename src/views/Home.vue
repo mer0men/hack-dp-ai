@@ -306,6 +306,7 @@ export default {
       selectedTransport: "DRIVING",
       directionsService: undefined,
       directionsRenderer: undefined,
+      geocoder: undefined,
       map: undefined,
       googleMapsClient: require("@google/maps").createClient({
         key: "AIzaSyxC0zt4dGxQo4j_dt9z8dofi1UHQOApc8S0"
@@ -346,6 +347,22 @@ export default {
           this.directionsRenderer.setDirections(response);
         }
       });
+    },
+    drawMFCMarkers(google) {
+      this.geocoder = new google.maps.Geocoder();
+
+      this.mfc.map((currentMFC) => {
+        this.geocoder.geocode({'address': currentMFC.Name}, (results, status) => {
+          if (status === 'OK') {
+            let marker = new google.maps.Marker({
+              map: this.map,
+              position: results[0].geometry.location
+            });
+          } else {
+            console.log("Address error:" + status);
+          }
+        })
+      })
     }
   },
   mounted() {
@@ -364,7 +381,7 @@ export default {
     GoogleMapsLoader.load(google => {
       // let vladivostok = new google.maps.LatLng(43.119809, 131.886924);
       let placeInputStart = [43.0250776, 131.8885557];
-      let placeInputEnd = [43.032648, 131.865268];
+      let placeInputEnd = [43.0849533, 131.9516535];
       let startLocation = new google.maps.LatLng(placeInputStart[0], placeInputStart[1]);
       let endLocation = new google.maps.LatLng(placeInputEnd[0], placeInputEnd[1]);
       this.directionsService = new google.maps.DirectionsService();
@@ -374,7 +391,8 @@ export default {
         zoom: 15,
         center: startLocation
       });
-        this.directionsRenderer.setMap(this.map);
+
+      this.directionsRenderer.setMap(this.map);
 
       let icon = "https://raw.githubusercontent.com/Meromen/hack-dp-ai/master/src/assets/human.png";
       let marker = new google.maps.Marker({
@@ -385,6 +403,7 @@ export default {
       });
 
       this.drawRoute(startLocation, endLocation);
+      this.drawMFCMarkers(google);
     });
   }
 };
