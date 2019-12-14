@@ -442,12 +442,15 @@ export default {
         placeInputEnd[1]
       );
       this.directionsService = new google.maps.DirectionsService();
-      this.directionsRenderer = new google.maps.DirectionsRenderer();
+      this.directionsRenderer = new google.maps.DirectionsRenderer({suppressMarkers: true});
 
       this.map = new google.maps.Map(document.getElementById("map"), {
         zoom: 15,
         center: this.startLocation
       });
+
+      let trafficLayer = new google.maps.TrafficLayer();
+      trafficLayer.setMap(this.map);
 
       this.directionsRenderer.setMap(this.map);
 
